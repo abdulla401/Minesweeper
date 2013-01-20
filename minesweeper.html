@@ -1,0 +1,181 @@
+<html>
+
+<head>
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.js" ></script>
+	<script type="text/javascript">
+	var mines = new Array(9);
+		 $(function () {
+            var content = '';
+            content += '<div id="tableWrap">';
+            content += '<table id="basicTable">';
+			
+
+            for (var i = 0; i < 10; i++) {
+			    mines[i] = new Array(9); //-1 -> mine, 1 -> no mine, 0 -> flagged
+                content += '<tr>';
+				for (var j = 0; j < 10; j++) {
+					  var rand = Math.random();
+					  content += '<td id="cell_'+ i + '_' +j  +'">';
+					  if(rand > .85) {
+					    content +=  '&nbsp;<span class="hidden"> * </span>';
+						mines[i][j] = -1;
+					  }else{
+						content += '&nbsp;';
+						mines[i][j] = 1;
+					  }
+					  
+					  content += '</td>';
+				}
+                content += '</tr>';
+            }
+
+            content += '</table>';
+            content += '</div>';
+
+            $('body').append(content);
+        });
+		
+		$(document).ready(function() {
+			$("#show_mines").click(function() {
+				$('#basicTable td span').toggleClass('hidden');
+			});
+			$('#basicTable td').click(
+				function(){
+					var id = $(this).attr('id');
+					var elem = id.split('_');
+					var x = parseInt(elem[1]);
+					var y = parseInt(elem[2]);
+					if(mines[x][y] == -1){
+						$('#basicTable td span').toggleClass('hidden');
+						  alert("game over");
+					}else{
+						$(this).addClass('greenColor');
+						var totalMines = countMines(x, y);
+						if(totalMines == 0){
+							checkCell(x, y, true);
+						}	
+						$(this).html(totalMines);
+						 //checkCell(x, y, true);
+					}
+					console.log(id + mines[elem[1]][elem[2]]);
+					
+				}
+			);
+		});
+		
+
+/*	if(mines[x][y] == -1){
+        return;
+    } 
+	if(mines[x][y] == 0){
+		return;
+	}
+	if(mines[x][y] == 1 ){
+	   $('#cell_'+x+'_'+y).addClass('greenColor');
+		mines[x][y] = 0;
+	} 
+	
+	*/
+		
+function checkCell(x, y, level){
+    console.log(x + "_" + y); 
+   
+    if(x<0 || x > 9 || y <0|| y >9){
+        return;
+    }
+	if(mines[x][y] == -1){
+        return;
+    } 
+	if(mines[x][y] == 0){
+		return;
+	}
+	if(mines[x][y] == 1 ){
+	   if(!level){
+	    $('#cell_'+x+'_'+y).addClass('greenColor');
+		var ret  = countMines(x, y);
+		 $('#cell_'+x+'_'+y).html(ret);
+		if(ret == 0 ){
+		   $('#cell_'+x+'_'+y).addClass('greenColor');
+		   mines[x][y] = 0;
+		   checkCell(x, y, true);
+		}
+		return;
+	}
+	} 
+
+
+	
+    
+    checkCell(x-1, y-1, false);
+    checkCell(x-1, y, false);
+    checkCell(x-1, y+1, false);
+
+    checkCell(x, y-1, false); 
+    checkCell(x, y+1, false);
+ 
+    checkCell(x+1, y-1, false);
+    checkCell(x+1, y, false);
+    checkCell(x+1, y+1, false);
+}
+
+function hasMine(x, y){
+	
+ if(x<0 || x > 9 || y <0|| y >9){
+ console.log(x + " --"+y + "  -- 0" );
+        return 0;
+  }
+  if(mines[x][y] == -1){
+  console.log(x + " --"+y + "  -->1" );
+       return 1;
+    }   
+	return 0;	
+}
+
+function countMines(x, y){
+	console.log(x + "" + y);
+    return hasMine(x-1, y-1) + hasMine(x-1, y) + hasMine(x-1, y+1) +
+    hasMine(x, y-1) +     hasMine(x, y+1) + 
+    hasMine(x+1, y-1) + hasMine(x+1, y) + hasMine(x+1, y+1);
+}
+
+
+
+
+		
+	</script>
+	<style>
+		table, th, td
+		{
+		border: 1px solid black;
+		}
+		#basicTable  {
+			width: 400px;
+		}
+		.redColor{
+			background: #FF0000;
+		}
+		.greenColor{
+		    background:#006600;
+		}
+		.hidden{
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+<button type="button" id="show_mines">ShowMines</button>
+	<table border="1">
+	<tr>
+	<td>*</td>
+	<td>*</td>
+	</tr>
+	<tr>
+	<td>*</td>
+	<td>*</td>
+	</tr>
+	</table>
+</body>
+
+</html>
