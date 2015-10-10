@@ -1,4 +1,4 @@
 minesweeper
 ===========
 
-minesweeper in javascript
+Minesweeper written in Javascript
